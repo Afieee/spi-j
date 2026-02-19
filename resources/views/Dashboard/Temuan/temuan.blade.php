@@ -48,39 +48,72 @@
                                                 <thead class="thead-dark">
                                                     <tr>
                                                         <th style="width: 5%;">No</th>
-                                                        <th style="width: 35%;">Isi Temuan</th>
-                                                        <th style="width: 20%;">Jenis Temuan</th>
-                                                        <th style="width: 20%;">Akibat</th>
+                                                        <th style="width: 30%;">Isi Temuan</th>
+                                                        <th style="width: 15%;">Jenis Temuan</th>
+                                                        <th style="width: 15%;">Akibat</th>
+                                                        <th style="width: 15%;">Status</th> <!-- TAMBAHAN -->
                                                         <th style="width: 20%;">Rekomendasi</th>
                                                     </tr>
                                                 </thead>
+
                                                 <tbody>
                                                     @forelse ($temuan as $index => $item)
+                                                        @php
+                                                            $isClosed = false;
+
+                                                            foreach ($item->recomendeds as $rekom) {
+                                                                foreach ($rekom->tindakLanjut as $tl) {
+                                                                    if (
+                                                                        trim(strtolower($tl->status_tl)) ===
+                                                                        'sudah tindak lanjut'
+                                                                    ) {
+                                                                        $isClosed = true;
+                                                                        break 2;
+                                                                    }
+                                                                }
+                                                            }
+                                                        @endphp
+
                                                         <tr>
-                                                            {{-- Nomor urut yang tetap berlanjut di tiap halaman --}}
-                                                            <td>{{ $loop->iteration + ($temuan->currentPage() - 1) * $temuan->perPage() }}</td>
+                                                            <td>{{ $loop->iteration + ($temuan->currentPage() - 1) * $temuan->perPage() }}
+                                                            </td>
                                                             <td>{{ $item->isi_temuan }}</td>
                                                             <td>{{ $item->jenis_temuan }}</td>
                                                             <td>{{ $item->akibat }}</td>
+
+                                                            <td class="text-center">
+                                                                @if ($isClosed)
+                                                                    <span class="badge badge-success">Ditutup</span>
+                                                                @else
+                                                                    <span class="badge badge-warning">Proses</span>
+                                                                @endif
+                                                            </td>
+
                                                             <td>
-                                                                <a href="{{ route('audit.rekomendasi.index-user', $item->id) }}" class="btn btn-sm btn-primary">
+                                                                <a href="{{ route('audit.rekomendasi.index-user', $item->id) }}"
+                                                                    class="btn btn-sm btn-primary">
                                                                     <i class="bi bi-lightbulb"></i> Rekomendasi
                                                                 </a>
                                                             </td>
                                                         </tr>
+
                                                     @empty
                                                         <tr>
-                                                            <td colspan="5" class="text-center text-muted">Tidak ada data temuan</td>
+                                                            <td colspan="6" class="text-center text-muted">
+                                                                Tidak ada data temuan
+                                                            </td>
                                                         </tr>
                                                     @endforelse
                                                 </tbody>
+
                                             </table>
                                         </div>
 
                                         {{-- Pagination links --}}
                                         <div class="d-flex justify-content-between align-items-center mt-3">
                                             <div class="text-muted">
-                                                Menampilkan {{ $temuan->firstItem() }}–{{ $temuan->lastItem() }} dari {{ $temuan->total() }} data
+                                                Menampilkan {{ $temuan->firstItem() }}–{{ $temuan->lastItem() }} dari
+                                                {{ $temuan->total() }} data
                                             </div>
                                             <div>
                                                 {{ $temuan->links() }}
@@ -98,21 +131,25 @@
                                     <h4 class="card-title">Tambah Temuan</h4>
                                 </div>
                                 <div class="card-body">
-                                     <form action="{{ route('audit.temuan.store') }}" method="POST">
+                                    <form action="{{ route('audit.temuan.store') }}" method="POST">
                                         @csrf
                                         <div class="form-group">
                                             <label for="isi_temuan">Isi Temuan</label>
-                                            <input type="text" class="form-control" name="isi_temuan" placeholder="Isi Temuan" required>
+                                            <input type="text" class="form-control" name="isi_temuan"
+                                                placeholder="Isi Temuan" required>
 
                                             <label for="jenis_temuan">Jenis Temuan</label>
-                                            <input type="text" class="form-control" name="jenis_temuan" placeholder="Jenis Temuan" required>
+                                            <input type="text" class="form-control" name="jenis_temuan"
+                                                placeholder="Jenis Temuan" required>
 
                                             <label for="akibat">Akibat</label>
-                                            <input type="text" class="form-control" name="akibat" placeholder="Akibat" required>
+                                            <input type="text" class="form-control" name="akibat"
+                                                placeholder="Akibat" required>
 
-                                            <input type="text" class="form-control" name="id_audit" value={{ $id_audit }} placeholder="Id Audit" required hidden>
+                                            <input type="text" class="form-control" name="id_audit"
+                                                value={{ $id_audit }} placeholder="Id Audit" required hidden>
                                         </div>
-                                        
+
                                         <button type="submit" class="btn btn-primary">Tambah</button>
                                     </form>
                                 </div>

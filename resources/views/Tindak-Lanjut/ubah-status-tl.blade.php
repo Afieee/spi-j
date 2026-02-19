@@ -95,9 +95,7 @@
 
                                             <div>
                                                 <p><strong>Judul Audit:</strong> {{ $recomendeds->title }}</p>
-                                                <p><strong>Kode Audit:</strong> {{ $recomendeds->code }}</p>
-                                                <p><strong>Divisi:</strong> {{ $recomendeds->divisi }}</p>
-                                                <p><strong>Aktivitas:</strong> {{ $recomendeds->activity }}</p>
+
                                                 <hr>
                                                 <label for="status"><strong>Status</strong></label>
                                                 <select name="status" class="form-control">

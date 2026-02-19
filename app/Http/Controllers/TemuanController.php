@@ -21,14 +21,22 @@ class TemuanController extends Controller
      */
     public function index($auditId)
     {
-        // Ambil semua temuan berdasarkan id_audit
-        $temuan = Temuan::where('id_audit', $auditId)->paginate(5);
+        // Tambahkan eager loading relasi
+        $temuan = Temuan::where('id_audit', $auditId)
+            ->with('recomendeds.tindakLanjut')
+            ->paginate(5);
+
         $id_audit = $auditId;
         $audit = Audit::find($auditId);
 
-        // Kirim ke view
-        return view('Dashboard.Temuan.temuan', ['temuan' => $temuan, 'id_audit' => $id_audit, 'judul_audit' => $audit->judul_audit]);
+        return view('Dashboard.Temuan.temuan', [
+            'temuan' => $temuan,
+            'id_audit' => $id_audit,
+            'judul_audit' => $audit->judul_audit
+        ]);
     }
+
+
 
 
     public function tampilTable(Request $request)
@@ -57,27 +65,27 @@ class TemuanController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request): RedirectResponse
-{
-    $validated = $request->validate([
-        'isi_temuan' => 'required|string',
-        'jenis_temuan' => 'required|string',
-        'akibat' => 'required|string',
-        'id_audit' => 'required|numeric',
-    ], [
-        'isi_temuan.required' => 'Isi Temuan harus diisi!',
-        'jenis_temuan.required' => 'Jenis Temuan harus diisi!',
-        'akibat.required' => 'Akibat harus diisi!',
-    ]);
+    {
+        $validated = $request->validate([
+            'isi_temuan' => 'required|string',
+            'jenis_temuan' => 'required|string',
+            'akibat' => 'required|string',
+            'id_audit' => 'required|numeric',
+        ], [
+            'isi_temuan.required' => 'Isi Temuan harus diisi!',
+            'jenis_temuan.required' => 'Jenis Temuan harus diisi!',
+            'akibat.required' => 'Akibat harus diisi!',
+        ]);
 
-    Temuan::create([
-        'id_audit' => $request->id_audit,
-        'isi_temuan' => $request->isi_temuan,
-        'jenis_temuan' => $request->jenis_temuan,
-        'akibat' => $request->akibat,
-    ]);
+        Temuan::create([
+            'id_audit' => $request->id_audit,
+            'isi_temuan' => $request->isi_temuan,
+            'jenis_temuan' => $request->jenis_temuan,
+            'akibat' => $request->akibat,
+        ]);
 
-    return redirect()->back()->with('success', 'Data temuan berhasil disimpan!');
-}
+        return redirect()->back()->with('success', 'Data temuan berhasil disimpan!');
+    }
 
     /**
      * Display the specified resource.

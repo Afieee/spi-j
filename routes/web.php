@@ -1,15 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\LaporanHasilAuditController;
-use App\Http\Controllers\TemuanController;
 use App\Http\Controllers\HalPerluDiperhatikanController;
-use App\Http\Controllers\RecomendedController;
-use App\Http\Controllers\TindakLanjutController;
+use App\Http\Controllers\HistoryAuditController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\LaporanHasilAuditController;
 use App\Http\Controllers\PkptController;
+use App\Http\Controllers\RecomendedController;
+use App\Http\Controllers\TemuanController;
+use App\Http\Controllers\TindakLanjutController;
 use App\Models\TindakLanjut;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,9 +100,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('rekomendasi/store', [RecomendedController::class, 'store'])->name('rekomendasi.store');
         Route::put('rekomendasi/{audit}/{id}/update', [RecomendedController::class, 'update'])->name('rekomendasi.update');
         Route::delete('rekomendasi/destroy', [RecomendedController::class, 'destroy'])->name('rekomendasi.destroy');
-
-
         Route::get('tindak-lanjut/{rekomendasiId}', [TindakLanjutController::class, 'index'])->name('tindak-lanjut.index');
+
+        Route::get('history-audit', [HistoryAuditController::class, 'historyAudit'])->name('history-audit.index');
     });
 
     Route::get('rekomendasi', [RecomendedController::class, 'tampilTable'])->name('rekomendasi.index');
