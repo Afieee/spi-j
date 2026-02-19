@@ -124,47 +124,11 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Card untuk Terbuka (Rekomendasi) -->
-                    <div class="col-lg-3 col-md-6 col-sm-12 mb-1">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <i class="fa fa-folder-open font-large-2 success"></i>
-                                <h3 class="mt-2" id="terbukaCount">{{ $auditCountStatus1 }}</h3>
-                                <p class="text-muted">Terbuka (Rekomendasi)</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-
-                <div class="row">
-                    <!-- Card untuk Progress (Rekomendasi) -->
-                    <div class="col-lg-3 col-md-6 col-sm-12 mb-1">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <i class="fa fa-spinner font-large-2 warning"></i>
-                                <h3 class="mt-2" id="progressCount">{{ $auditCountStatus2 }}</h3>
-                                <p class="text-muted">Progress (Rekomendasi)</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card untuk Closed (Rekomendasi) -->
-                    <div class="col-lg-3 col-md-6 col-sm-12 mb-1">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <i class="fa fa-folder font-large-2 danger"></i>
-                                <h3 class="mt-2" id="closedCount">{{ $auditCountStatus3 }}</h3>
-                                <p class="text-muted">Closed (Rekomendasi)</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
 
                 <div class="row">
                     <!-- Chart untuk PKPT vs Surat Tugas -->
-                    <div class="col-lg-4 col-md-12 mb-2">
+                    <div class="col-lg-6 col-md-12 mb-2">
                         <div class="card">
                             <div class="card-content">
                                 <div class="card-body">
@@ -175,20 +139,8 @@
                         </div>
                     </div>
 
-                    <!-- Chart untuk Total Temuan Masing-masing Unit -->
-                    <div class="col-lg-4 col-md-12 mb-2">
-                        <div class="card">
-                            <div class="card-content">
-                                <div class="card-body">
-                                    <h4 class="card-title">Total Rekomendasi Keseluruhan</h4>
-                                    <canvas id="auditPieChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Chart untuk Status Tindak Lanjut -->
-                    <div class="col-lg-4 col-md-12 mb-2">
+                    <div class="col-lg-6 col-md-12 mb-2">
                         <div class="card">
                             <div class="card-content">
                                 <div class="card-body">
@@ -250,62 +202,17 @@
                 }
             });
 
-            // Inisialisasi Chart 2: Total Temuan Masing-masing Unit
-            var ctxStatusPie = document.getElementById("auditPieChart").getContext("2d");
-            var auditStatusPieChart = new Chart(ctxStatusPie, {
-                type: "pie",
-                data: {
-                    labels: ["Terbuka", "Progress", "Closed"],
-                    datasets: [{
-                        data: [
-                            auditData.tahunData ? Object.values(auditData.tahunData).flat()
-                            .filter(item => item.status === 1).reduce((sum, item) => sum + item
-                                .jumlah, 0) : 0,
-                            auditData.tahunData ? Object.values(auditData.tahunData).flat()
-                            .filter(item => item.status === 2).reduce((sum, item) => sum + item
-                                .jumlah, 0) : 0,
-                            auditData.tahunData ? Object.values(auditData.tahunData).flat()
-                            .filter(item => item.status === 3).reduce((sum, item) => sum + item
-                                .jumlah, 0) : 0
-                        ],
-                        backgroundColor: ["#2ecc71", "#f1c40f", "#e74c3c"]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom',
-                            labels: {
-                                usePointStyle: true,
-                                pointStyle: 'circle'
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.raw || 0;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    return `${label}: ${value} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Inisialisasi Chart 3: Status Tindak Lanjut
+            // Inisialisasi Chart 2: Status Tindak Lanjut (tanpa Tindak Lanjut Tidak Sesuai)
             var ctxTindakLanjutPie = document.getElementById("tindakLanjutPieChart").getContext("2d");
             var tindakLanjutPieChart = new Chart(ctxTindakLanjutPie, {
                 type: "pie",
                 data: {
-                    labels: ["Tidak Sesuai", "Sudah Tindak Lanjut", "Belum Tindak Lanjut"],
+                    labels: ["Sudah Tindak Lanjut", "Belum Tindak Lanjut"],
                     datasets: [{
-                        data: [auditData.statusTL1, auditData.statusTL2, auditData.statusTL3],
-                        backgroundColor: ["#2c3e50", "#16a085", "#e67e22"]
+                        data: [auditData.statusTL2, auditData.statusTL3],
+                        backgroundColor: ["#16a085", "#e67e22"],
+                        borderColor: "#ffffff",
+                        borderWidth: 2
                     }]
                 },
                 options: {
@@ -346,7 +253,7 @@
                 } else {
                     hitungPKA = auditData.hitungPKAByYear[tahun] ? auditData.hitungPKAByYear[tahun].jumlah : 0;
                     hitungSurat = auditData.hitungSuratByYear[tahun] ? auditData.hitungSuratByYear[tahun].jumlah :
-                        0;
+                    0;
                 }
 
                 const pkaSuratPercentages = calculatePercentages([hitungPKA, hitungSurat]);
@@ -357,58 +264,23 @@
                 ];
                 auditDataPieChart.update();
 
-                // Update Chart 2: Total Temuan Masing-masing Unit
-                let terbuka = 0,
-                    progress = 0,
-                    closed = 0;
-
-                if (tahun === "") {
-                    terbuka = auditData.tahunData ? Object.values(auditData.tahunData).flat().filter(item => item
-                        .status === 1).reduce((sum, item) => sum + item.jumlah, 0) : 0;
-                    progress = auditData.tahunData ? Object.values(auditData.tahunData).flat().filter(item => item
-                        .status === 2).reduce((sum, item) => sum + item.jumlah, 0) : 0;
-                    closed = auditData.tahunData ? Object.values(auditData.tahunData).flat().filter(item => item
-                        .status === 3).reduce((sum, item) => sum + item.jumlah, 0) : 0;
-                } else {
-                    if (auditData.tahunData[tahun]) {
-                        auditData.tahunData[tahun].forEach(item => {
-                            if (item.status === 1) terbuka += item.jumlah;
-                            if (item.status === 2) progress += item.jumlah;
-                            if (item.status === 3) closed += item.jumlah;
-                        });
-                    }
-                }
-
-                const temuanPercentages = calculatePercentages([terbuka, progress, closed]);
-                auditStatusPieChart.data.datasets[0].data = [terbuka, progress, closed];
-                auditStatusPieChart.data.labels = [
-                    `Terbuka (${temuanPercentages[0]}%)`,
-                    `Progress (${temuanPercentages[1]}%)`,
-                    `Closed (${temuanPercentages[2]}%)`
-                ];
-                auditStatusPieChart.update();
-
-                // Update Chart 3: Status Tindak Lanjut
-                let statusTL1 = 0,
-                    statusTL2 = 0,
+                // Update Chart 2: Status Tindak Lanjut (tanpa Tindak Lanjut Tidak Sesuai)
+                let statusTL2 = 0,
                     statusTL3 = 0;
 
                 if (tahun === "") {
-                    statusTL1 = auditData.statusTL1;
                     statusTL2 = auditData.statusTL2;
                     statusTL3 = auditData.statusTL3;
                 } else {
-                    statusTL1 = auditData.statusTL1ByYear[tahun] ? auditData.statusTL1ByYear[tahun].jumlah : 0;
                     statusTL2 = auditData.statusTL2ByYear[tahun] ? auditData.statusTL2ByYear[tahun].jumlah : 0;
                     statusTL3 = auditData.statusTL3ByYear[tahun] ? auditData.statusTL3ByYear[tahun].jumlah : 0;
                 }
 
-                const tindakLanjutPercentages = calculatePercentages([statusTL1, statusTL2, statusTL3]);
-                tindakLanjutPieChart.data.datasets[0].data = [statusTL1, statusTL2, statusTL3];
+                const tindakLanjutPercentages = calculatePercentages([statusTL2, statusTL3]);
+                tindakLanjutPieChart.data.datasets[0].data = [statusTL2, statusTL3];
                 tindakLanjutPieChart.data.labels = [
-                    `Tidak Sesuai (${tindakLanjutPercentages[0]}%)`,
-                    `Sudah Tindak Lanjut (${tindakLanjutPercentages[1]}%)`,
-                    `Belum Tindak Lanjut (${tindakLanjutPercentages[2]}%)`
+                    `Sudah Tindak Lanjut (${tindakLanjutPercentages[0]}%)`,
+                    `Belum Tindak Lanjut (${tindakLanjutPercentages[1]}%)`
                 ];
                 tindakLanjutPieChart.update();
             }
