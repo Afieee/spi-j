@@ -12,15 +12,61 @@ use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 
 class LaporanHasilAuditTable extends DataTable
 {
-    /**
-     * Build the DataTable class.
-     */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
 
             ->addIndexColumn()
 
+            /*
+            |--------------------------------------------------------------------------
+            | STATUS ORDER (Untuk Sorting)
+            |--------------------------------------------------------------------------
+            | 0 = Proses
+            | 1 = Ditutup
+            */
+            ->addColumn('status_order', function ($row) {
+
+                $totalRekom = 0;
+                $totalClosedTL = 0;
+
+                foreach ($row->temuans as $temuan) {
+
+                    foreach ($temuan->recomendeds as $rekom) {
+
+                        $totalRekom++;
+
+                        if ($rekom->tindakLanjut->isEmpty()) {
+                            continue;
+                        }
+
+                        foreach ($rekom->tindakLanjut as $tl) {
+                            if (
+                                trim(strtolower($tl->status_tl)) ===
+                                strtolower("Sudah Tindak Lanjut")
+                            ) {
+                                $totalClosedTL++;
+                            }
+                        }
+                    }
+                }
+
+                if ($totalRekom === 0) {
+                    return 0; // Proses
+                }
+
+                if ($totalClosedTL >= $totalRekom) {
+                    return 1; // Ditutup
+                }
+
+                return 0; // Proses
+            })
+
+            /*
+            |--------------------------------------------------------------------------
+            | STATUS BADGE (Tampilan)
+            |--------------------------------------------------------------------------
+            */
             ->addColumn('status', function ($row) {
 
                 $totalRekom = 0;
@@ -32,26 +78,26 @@ class LaporanHasilAuditTable extends DataTable
 
                         $totalRekom++;
 
-                        // Jika tidak ada TL sama sekali → otomatis proses
                         if ($rekom->tindakLanjut->isEmpty()) {
                             continue;
                         }
 
                         foreach ($rekom->tindakLanjut as $tl) {
 
-                            if (trim(strtolower($tl->status_tl)) === strtolower("Sudah Tindak Lanjut")) {
+                            if (
+                                trim(strtolower($tl->status_tl)) ===
+                                strtolower("Sudah Tindak Lanjut")
+                            ) {
                                 $totalClosedTL++;
                             }
                         }
                     }
                 }
 
-                // Jika tidak ada rekomendasi
                 if ($totalRekom === 0) {
                     return '<span class="badge badge-warning">Proses</span>';
                 }
 
-                // Jika semua rekomendasi sudah memiliki TL yang closed
                 if ($totalClosedTL >= $totalRekom) {
                     return '<span class="badge badge-success">Ditutup</span>';
                 }
@@ -84,9 +130,6 @@ class LaporanHasilAuditTable extends DataTable
             ->setRowId('id');
     }
 
-    /**
-     * Get the query source of dataTable.
-     */
     public function query(Audit $model): QueryBuilder
     {
         return $model->newQuery()
@@ -95,9 +138,6 @@ class LaporanHasilAuditTable extends DataTable
             ]);
     }
 
-    /**
-     * Optional method if you want to use the html builder.
-     */
     public function html(): HtmlBuilder
     {
         return $this->builder()
@@ -107,7 +147,10 @@ class LaporanHasilAuditTable extends DataTable
             ->dom('Bfrtip')
             ->pageLength(5)
             ->lengthMenu([5, 10, 20, 50, 100, 200, 500])
-            ->orderBy(1)
+
+            // 👇 SORT BERDASARKAN STATUS_ORDER
+            ->orderBy(5, 'asc')
+
             ->selectStyleSingle()
             ->buttons(
                 Button::make('pageLength'),
@@ -115,9 +158,6 @@ class LaporanHasilAuditTable extends DataTable
             );
     }
 
-    /**
-     * Get the dataTable columns definition.
-     */
     public function getColumns(): array
     {
         return [
@@ -132,6 +172,11 @@ class LaporanHasilAuditTable extends DataTable
             Column::make('date')->title('Tanggal LHA'),
             Column::make('divisi')->title('Divisi / Unit'),
 
+            // Kolom hidden untuk sorting
+            Column::computed('status_order')
+                ->visible(false)
+                ->searchable(false),
+
             Column::computed('status')
                 ->title('Status')
                 ->addClass('text-center'),
@@ -145,9 +190,6 @@ class LaporanHasilAuditTable extends DataTable
         ];
     }
 
-    /**
-     * Get the filename for export.
-     */
     protected function filename(): string
     {
         return 'Laporan_Hasil_Audit_' . date('YmdHis');

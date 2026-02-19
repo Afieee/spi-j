@@ -28,7 +28,7 @@ Route::get('/', function () {
 });
 
 
-// Untuk debug by acong
+// Untuk debug
 Route::get('/test', function () {
     return view('test');
 });

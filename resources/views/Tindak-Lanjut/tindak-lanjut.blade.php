@@ -77,7 +77,9 @@
                                         {{-- Pagination links --}}
                                         <div class="d-flex justify-content-between align-items-center mt-3">
                                             <div class="text-muted">
-                                                Menampilkan {{ $tindakLanjuts->firstItem() }}–{{ $tindakLanjuts->lastItem() }} dari {{ $tindakLanjuts->total() }} data
+                                                Menampilkan
+                                                {{ $tindakLanjuts->firstItem() }}–{{ $tindakLanjuts->lastItem() }} dari
+                                                {{ $tindakLanjuts->total() }} data
                                             </div>
                                             <div>
                                                 {{ $tindakLanjuts->links() }}
@@ -118,10 +120,8 @@
                                             <label for="status_tl">Status:</label>
                                             <select name="status_tl" id="status_tl" class="form-control" required>
                                                 <option value="" disabled selected>Pilih Status</option>
-                                                <option value="Sudah Tindak Lanjut">Sudah Tindak Lanjut</option>
-                                                <option value="Belum Tindak Lanjut">Belum Tindak Lanjut</option>
-                                                <option value="Tindak Lanjut Tidak Sesuai">Tindak Lanjut Tidak Sesuai
-                                                </option>
+                                                <option value="Sudah Tindak Lanjut">Tidak Lanjut Selesai</option>
+                                                <option value="Belum Tindak Lanjut">Tindak Lanjut Diteruskan</option>
                                             </select>
                                         </div>
 
