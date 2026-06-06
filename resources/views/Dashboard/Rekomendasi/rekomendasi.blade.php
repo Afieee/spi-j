@@ -4,9 +4,21 @@
 <head>
     @include('Template.head')
     <title>SPI Navigator - Rekomendasi</title>
+
     <style>
         .custom-file-label::after {
             content: "Pilih File";
+        }
+
+        #filePreview img {
+            max-width: 250px;
+            border-radius: 6px;
+        }
+
+        #filePreview iframe {
+            width: 100%;
+            height: 300px;
+            border-radius: 6px;
         }
     </style>
 </head>
@@ -19,6 +31,7 @@
 
     <div class="app-content content">
         <div class="content-wrapper">
+
             <div class="content-header row">
                 <div class="content-header-left col-md-8 col-12 mb-2 breadcrumb-new">
                     <h3 class="content-header-title mb-0 d-inline-block">Rekomendasi</h3>
@@ -50,6 +63,7 @@
 
                                 <div class="card-content collapse show">
                                     <div class="card-body card-dashboard">
+
                                         <div class="table-responsive">
                                             <table class="table table-striped table-bordered">
                                                 <thead class="thead-dark">
@@ -77,16 +91,13 @@
                                                                         Lihat File
                                                                     </a>
                                                                 @else
-                                                                    <span class="text-muted">
-                                                                        Tidak ada file
-                                                                    </span>
+                                                                    <span class="text-muted">Tidak ada file</span>
                                                                 @endif
                                                             </td>
 
                                                             <td>{{ $item->batas_waktu }}</td>
                                                             <td>{{ $item->pic }}</td>
 
-                                                            <!-- STATUS BERDASARKAN TL -->
                                                             <td>
                                                                 @php
                                                                     $adaClosed =
@@ -96,13 +107,9 @@
                                                                 @endphp
 
                                                                 @if ($adaClosed)
-                                                                    <span class="badge badge-success">
-                                                                        Closed
-                                                                    </span>
+                                                                    <span class="badge badge-success">Closed</span>
                                                                 @else
-                                                                    <span class="badge badge-warning">
-                                                                        Progress
-                                                                    </span>
+                                                                    <span class="badge badge-warning">Progress</span>
                                                                 @endif
                                                             </td>
 
@@ -117,16 +124,11 @@
                                                 </tbody>
                                             </table>
 
-                                            <!-- PAGINATION -->
-                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                            <div class="d-flex justify-content-between mt-3">
                                                 <div class="text-muted">
-                                                    Menampilkan
-                                                    {{ $rekomendasi->firstItem() }}
-                                                    –
-                                                    {{ $rekomendasi->lastItem() }}
-                                                    dari
-                                                    {{ $rekomendasi->total() }}
-                                                    data
+                                                    Menampilkan {{ $rekomendasi->firstItem() }} –
+                                                    {{ $rekomendasi->lastItem() }} dari
+                                                    {{ $rekomendasi->total() }} data
                                                 </div>
 
                                                 <div>
@@ -141,36 +143,45 @@
                         </div>
 
                         <!-- ======================= -->
-                        <!-- KOLOM FORM (TIDAK DIUBAH) -->
+                        <!-- KOLOM FORM -->
                         <!-- ======================= -->
                         <div class="col-md-5">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Tambah Temuan</h4>
+                                    <h4 class="card-title">Tambah Rekomendasi</h4>
                                 </div>
 
                                 <div class="card-body">
+
+                                    <!-- ERROR VALIDATION -->
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger">
+                                            <ul class="mb-0">
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+
                                     <form action="{{ route('audit.rekomendasi.store') }}" method="POST"
                                         enctype="multipart/form-data">
                                         @csrf
 
                                         <div class="form-group mb-3">
-                                            <label class="font-weight-bold">
-                                                Judul Rekomendasi
-                                            </label>
-                                            <input type="text" class="form-control" name="title"
-                                                placeholder="Masukkan judul rekomendasi" required>
+                                            <label class="font-weight-bold">Judul Rekomendasi</label>
+                                            <input type="text" class="form-control" name="title" required>
                                         </div>
 
                                         <input type="hidden" name="status" value="1">
 
                                         <div class="form-group mb-3">
-                                            <label class="font-weight-bold">
-                                                Upload File Pendukung
-                                            </label>
+                                            <label class="font-weight-bold">Upload File Pendukung</label>
+
                                             <div class="custom-file">
                                                 <input type="file" class="custom-file-input" name="closed_file_surat"
-                                                    required>
+                                                    id="fileInput" required>
+
                                                 <label class="custom-file-label">
                                                     Pilih file...
                                                 </label>
@@ -178,26 +189,20 @@
                                         </div>
 
                                         <div class="form-group mb-3">
-                                            <label class="font-weight-bold">
-                                                Batas Temuan
-                                            </label>
+                                            <label class="font-weight-bold">Batas Temuan</label>
                                             <input type="date" class="form-control" name="batas_waktu" required>
                                         </div>
 
                                         <div class="form-group mb-3">
-                                            <label class="font-weight-bold">
-                                                PIC
-                                            </label>
-                                            <input type="text" class="form-control" name="pic"
-                                                placeholder="Masukkan nama PIC" required>
+                                            <label class="font-weight-bold">PIC</label>
+                                            <input type="text" class="form-control" name="pic" required>
                                         </div>
 
                                         <input type="hidden" name="id_temuan" value="{{ $id_temuan }}">
 
                                         <div class="text-right">
                                             <button type="submit" class="btn btn-primary">
-                                                <i class="fa fa-plus"></i>
-                                                Tambah
+                                                <i class="fa fa-plus"></i> Tambah
                                             </button>
                                         </div>
 
@@ -209,12 +214,31 @@
                     </div>
                 </section>
             </div>
+
         </div>
     </div>
 
     @include('Template.footer')
     @include('Template.js')
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const fileInput = document.getElementById("fileInput");
+            const label = document.querySelector(".custom-file-label");
+
+            fileInput.addEventListener("change", function() {
+                const file = this.files[0];
+
+                if (!file) {
+                    label.innerText = "Pilih file...";
+                    return;
+                }
+
+                // hanya tampilkan nama file
+                label.innerText = file.name;
+            });
+        });
+    </script>
 </body>
 
 </html>

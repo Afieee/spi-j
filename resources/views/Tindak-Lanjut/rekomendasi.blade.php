@@ -151,7 +151,7 @@
                                                         <th>Judul Rekomendasi</th>
                                                         <th>Status</th>
                                                         <th>Tanggal Audit</th>
-                                                        <th>Ubah Status</th>
+                                                        {{-- <th>Ubah Status</th> --}}
                                                         <th>Tindak-Lanjut</th>
                                                     </tr>
                                                 </thead>
@@ -171,13 +171,14 @@
                                                             </td>
                                                             </td>
                                                             <td>{{ $recomended->temuan->audit->date ?? '-' }}</td>
-                                                            <td>
+                                                            {{-- <td>
                                                                 <a href="{{ route('halamanUpdateRecomendeds', $recomended->id) }}"
                                                                     class="btn btn-sm btn-primary">
                                                                     Ubah Status
                                                                 </a>
-                                                            </td>
-                                                            <td><a href="{{ route('audit.tindak-lanjut.index', $recomended->id) }}">Buat
+                                                            </td> --}}
+                                                            <td><a
+                                                                    href="{{ route('audit.tindak-lanjut.index', $recomended->id) }}">Buat
                                                                     Tindak-Lanjut</a>
                                                             </td>
                                                         </tr>

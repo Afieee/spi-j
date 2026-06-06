@@ -103,8 +103,7 @@ class RecomendedController extends Controller
             'status' => 'required|string',
             'batas_waktu' => 'required|date',
             'pic' => 'required|string|max:255',
-            'closed_file_surat' => 'nullable|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:2048', // maksimal 2MB
-            'id_temuan' => 'required|numeric',
+            'closed_file_surat' => 'nullable|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:10240', // maksimal 10MB            'id_temuan' => 'required|numeric',
         ], [
             'title.required' => 'Judul rekomendasi harus diisi!',
             'status.required' => 'Status harus diisi!',
